@@ -75,34 +75,55 @@ const calculation = calculatePayment(100, 'free');
 
 ## 🔧 Core Components
 
-### 1. Paystack Client (`lib/paystack-client.ts`)
+### 1. Paystack MCP Integration (`lib/paystack-mcp-integration.ts`)
+
+**Based on tested Zapier MCP Connector with confirmed ZAR support**
 
 ```typescript
-import { createPaystackClient } from './lib/paystack-client';
+import { createDMShopPaystackMCP } from './lib/paystack-mcp-integration';
 
-const client = createPaystackClient({
-  publicKey: process.env.PAYSTACK_PUBLIC_KEY,
-  secretKey: process.env.PAYSTACK_SECRET_KEY,
-  baseUrl: 'https://api.paystack.co',
-  webhookSecret: process.env.PAYSTACK_WEBHOOK_SECRET
+const dmShopPaystack = createDMShopPaystackMCP();
+
+// Create order checkout (tested with ZAR)
+const checkout = await dmShopPaystack.createOrderCheckout({
+  customerEmail: 'customer@example.co.za',
+  orderId: 'ORDER_123',
+  totalAmount: 100, // R100
+  sellerTier: 'free', // 7% commission + R15 service fee
+  metadata: { store_id: 'store_456' }
 });
 
-// Initialize payment
-const transaction = await client.initializeTransaction({
-  reference: 'DMSHOP_ORDER_123',
-  amount: 12200, // R122 in kobo
-  email: 'customer@example.com',
-  currency: 'ZAR',
-  metadata: {
-    seller_id: 'seller_123',
-    store_id: 'store_456',
-    order_id: 'order_789',
-    commission_rate: 0.07
-  }
-});
+// Result: { authorization_url, access_code, reference }
+console.log(checkout.authorization_url); // Paystack checkout link
 ```
 
-### 2. Payment Calculator (`utils/payment-calculator.ts`)
+### 2. Available MCP Tools (22 Total - All Tested)
+
+```typescript
+// Core payment operations
+await dmShopPaystack.client.initializeTransaction({
+  email: 'test@example.co.za',
+  amount: '10000', // R100 in kobo
+  currency: 'ZAR',
+  reference: 'DMSHOP_001'
+});
+
+// Product management
+await dmShopPaystack.addDMShopProduct({
+  name: 'SA Test Product',
+  description: 'Product for South African market',
+  price: 299, // R299
+  quantity: 50,
+  sellerId: 'seller_123',
+  storeId: 'store_456'
+});
+
+// Customer verification
+const customer = await dmShopPaystack.verifyDMShopCustomer('customer@example.co.za');
+// Result: { first_name, last_name, email, customer_code, id }
+```
+
+### 3. Payment Calculator (`utils/payment-calculator.ts`)
 
 ```typescript
 import { calculatePayment, calculateOrderPayment } from './utils/payment-calculator';
@@ -126,7 +147,7 @@ const orderPayment = calculateOrderPayment([
 ]);
 ```
 
-### 3. Webhook Handler (`api/webhook-handler.ts`)
+### 4. Webhook Handler (`api/webhook-handler.ts`)
 
 ```typescript
 import { createWebhookHandler, automationConfigs } from './api/webhook-handler';
@@ -136,7 +157,6 @@ const webhookHandler = createWebhookHandler(
   supabaseUrl,
   supabaseKey,
   [
-    automationConfigs.zapier('https://hooks.zapier.com/hooks/catch/...'),
     automationConfigs.n8n('https://your-n8n.com/webhook/...'),
     automationConfigs.buildship('https://api.buildship.app/...')
   ]
@@ -146,7 +166,7 @@ const webhookHandler = createWebhookHandler(
 const result = await webhookHandler.processPaystackWebhook(payload, signature);
 ```
 
-### 4. Supabase Integration (`src/supabase-integration.ts`)
+### 5. Supabase Integration (`src/supabase-integration.ts`)
 
 ```typescript
 import { createMCPSupabaseClient } from './src/supabase-integration';
