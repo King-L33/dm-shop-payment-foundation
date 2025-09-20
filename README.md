@@ -169,20 +169,24 @@ await supabase.processOrderPayment(orderPayment, paystackEvent);
 
 ## 🔗 Automation Integrations
 
-### Zapier Webhooks
-- **Payment Success**: Trigger customer receipt email
-- **Payment Failed**: Create support ticket
-- **Seller Payout**: Send payout notification
+### n8n Automation Workflows (Primary Automation Platform)
+- **Payment Processing**: Automated payment confirmation and failure handling
+- **Order Fulfillment**: Inventory updates, shipping coordination, and tracking
+- **Customer Communications**: Automated emails, SMS, and notifications
+- **Seller Management**: Commission calculations, payout processing, and notifications
+- **Analytics & Reporting**: Data synchronization and business intelligence
 
-### n8n Workflows  
-- **Order Processing**: Inventory updates and fulfillment
-- **Customer Service**: Automated support workflows
-- **Analytics**: Data synchronization and reporting
+### Zapier MCP Tools (Tool Integration, NOT Automation)
+- **Email Tools**: Customer welcome, order confirmation, payment receipts
+- **SMS Tools**: South African mobile notifications and updates
+- **Document Generation**: Invoices, receipts, shipping labels, reports
+- **Data Validation**: SA phone numbers, addresses, bank accounts
+- **System Integration**: CRM sync, accounting sync, analytics sync
 
-### Buildship Automation
-- **Seller Notifications**: Commission updates and earnings
-- **Customer Communications**: Order status updates
-- **Platform Analytics**: Revenue tracking and insights
+### Buildship Integration (Secondary Automation)
+- **Backup Workflows**: Redundant automation for critical processes
+- **API Orchestration**: Complex multi-step API integrations
+- **Custom Business Logic**: Specialized South African market workflows
 
 ## 🇿🇦 South African Features
 
